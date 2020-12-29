@@ -1,0 +1,42 @@
+ebot:
+  build: .
+  restart: always
+  ports:
+    - "12360:12360"
+    - "12361:12361"
+    - "12360:12360/udp"
+    - "12361:12361/udp"
+  volumes:
+    - /opt/docker/ebot/logs:/ebot/logs
+    - /opt/docker/ebot/demos:/ebot/demos
+
+ebotweb:
+  build: ./ebotweb/.
+  restart: always
+  links:
+    - "mysql:mysql"
+  ports:
+    - "8000:80"
+  volumes:
+    - /opt/docker/ebot/demos:/opt/ebot/demos
+    - /opt/docker/ebot/logs:/opt/ebotlogs
+
+  environment:
+    EBOT_ADMIN_USER: 'admin'
+    EBOT_ADMIN_PASS: 'password'
+    EBOT_ADMIN_MAIL: 'admin@ebot'
+    MYSQL_HOST: '10.20.30.23'
+    MYSQL_PORT: '3306'
+    MYSQL_DB: 'ebotv3'
+    MYSQL_USER: 'root'
+    MYSQL_PASS: 'password'
+    
+mysql:
+  image: mysql:5.7
+  restart: always
+  volumes:
+    - /opt/docker/ebot/mysql:/var/lib/mysql
+  ports:
+    - "33066:3306"
+  expose:
+    - "3306"
